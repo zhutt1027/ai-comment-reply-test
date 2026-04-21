@@ -73,3 +73,7 @@ const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
   console.log(`🔥 http://localhost:${PORT}/test`)
 })
+
+app.get('/', (req, res) => {
+  res.send('服务正常运行 🚀')
+})
