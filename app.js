@@ -21,17 +21,27 @@ function cleanReply(text) {
 }
 
 async function generateReply(title, content, question) {
+  const safeQuestion = String(question || '').trim()
+
+  if (safeQuestion.length < 3) {
+    return '感谢关注，欢迎继续讨论～'
+  }
+
+  if (/^(哈哈|呵呵|666|牛|离谱|\?+|？+)$/.test(safeQuestion)) {
+    return '感谢关注，欢迎继续讨论～'
+  }
+
   const completion = await client.chat.completions.create({
     model: 'deepseek-chat',
     messages: [
       {
         role: 'system',
         content:
-          '你是资讯网站评论区的运营人员，请根据文章和评论生成自然回复，不要解释，不要加引号，控制在80字以内。'
+          '你是资讯网站评论区的运营人员，请以自然、口语化、有人味的方式回复用户评论。不要使用“根据文章”“本文”等表达。如果是提问，直接回答；如果是观点或质疑，用友好方式回应。控制在60字以内。'
       },
       {
         role: 'user',
-        content: `标题：${title}\n正文：${content}\n评论：${question}`
+        content: `标题：${title}\n正文：${content}\n评论：${safeQuestion}`
       }
     ]
   })
@@ -58,6 +68,8 @@ app.post('/test', async (req, res) => {
   }
 })
 
-app.listen(3000, () => {
-  console.log('🔥 http://localhost:3000/test')
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () => {
+  console.log(`🔥 http://localhost:${PORT}/test`)
 })
